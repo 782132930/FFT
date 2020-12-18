@@ -91,6 +91,9 @@ int main(void)
     float inReal[FFT_N] = {0}; //输入实部
     float inImag[FFT_N] = {0}; //输入虚部
 
+    float outReal[FFT_N] = {0}; //用于IFFT
+    float outImag[FFT_N] = {0}; //用于IFFT
+
     float outAF[FFT_N]; //输出幅频曲线
     float outPF[FFT_N]; //输出相频曲线
 
@@ -134,30 +137,35 @@ int main(void)
     line_sum(line3, inReal, FFT_N, inReal);
 
     //快速傅立叶变换,得到 幅频/相频 曲线
-    FFT(inReal, inImag, outAF, outPF, FFT_N);
+    FFT(inReal, inImag, outReal, outImag, outAF, outPF, FFT_N);
+    //反傅立叶变换
+    IFFT(outReal, outImag, outReal, outImag, FFT_N);
 
     while (1)
     {
         //横向放大倍数(就是横向把一个点打印多次)
         for (j = 0; j < ZOOM_X; j++)
         {
+#if 1
             //画输入曲线
             wave_load(ws, 0, (short)line1[i] + 30000);
             wave_load(ws, 1, (short)line2[i] + 23000);
             wave_load(ws, 2, (short)line3[i] + 15000);
             wave_load(ws, 3, (short)inReal[i]);
-
+#else
+            //反傅立叶变换对比
+            wave_load(ws, 0, (short)outReal[i] + 15000);//变换回来的时域曲线
+            wave_load(ws, 1, (short)inReal[i]);//变换前的时域曲线
+#endif
             //画相频曲线
             wave_load(ws, 4, -15000); //基准线
             wave_load(ws, 5, (short)(outPF[i] * 1000 - 15000)); //相位范围(-pi, pi),这里放大1000倍
             wave_load(ws, 6, (short)(M_PI * 1000 - 15000)); //pi相位参考线
             wave_load(ws, 7, (short)(-M_PI * 1000 - 15000)); //-pi相位参考线
-
             //画幅频曲线
             wave_load(ws, 8, -30000); //基准线
             wave_load(ws, 9, (short)(outAF[i] - 30000)); //幅值
             wave_load(ws, 10, 3000 - 30000); //3000幅值参考线
-
             wave_output(ws);
             usleep(5000);
         }

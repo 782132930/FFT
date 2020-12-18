@@ -118,7 +118,11 @@ static void _FFT(float _inReal[], float _inImag[], unsigned int N, unsigned int 
 }
 
 //复数FFT
-void FFT(float inReal[], float inImag[], float outAF[], float outPF[], unsigned int N)
+void FFT(
+    float inReal[], float inImag[],
+    float outReal[], float outImag[],
+    float outAF[], float outPF[],
+    unsigned int N)
 {
 	unsigned int i;
 
@@ -129,6 +133,11 @@ void FFT(float inReal[], float inImag[], float outAF[], float outPF[], unsigned 
 
 	_FFT(_inReal, _inImag, N, M);
 
+	//输出备份
+	if (outReal)
+		memcpy(outReal, _inReal, sizeof(_inReal));
+	if (outImag)
+		memcpy(outImag, _inImag, sizeof(_inImag));
 	//计算幅频
 	if (outAF)
 	{
@@ -144,7 +153,11 @@ void FFT(float inReal[], float inImag[], float outAF[], float outPF[], unsigned 
 }
 
 //实数FFT
-void FFTR(float inReal[], float inImag[], float outAF[], float outPF[], unsigned int N)
+void FFTR(
+    float inReal[], float inImag[],
+    float outReal[], float outImag[],
+    float outAF[], float outPF[],
+    unsigned int N)
 {
 	int i, k;
 	int j, r, p, B;
@@ -219,6 +232,11 @@ void FFTR(float inReal[], float inImag[], float outAF[], float outPF[], unsigned
 		_inImag[i] = xI[i];
 	}
 
+	//输出备份
+	if (outReal)
+		memcpy(outReal, _inReal, sizeof(_inReal));
+	if (outImag)
+		memcpy(outImag, _inImag, sizeof(_inImag));
 	//计算幅频
 	if (outAF)
 	{
@@ -281,7 +299,10 @@ static void _IFFT(float _inReal[], float _inImag[], unsigned int N, unsigned int
 }
 
 //复数IFFT
-void IFFT(float inReal[], float inImag[], float outAF[], float outPF[], unsigned int N)
+void IFFT(
+    float inReal[], float inImag[],
+    float outReal[], float outImag[],
+    unsigned int N)
 {
 	unsigned int i;
 
@@ -292,22 +313,18 @@ void IFFT(float inReal[], float inImag[], float outAF[], float outPF[], unsigned
 
 	_IFFT(_inReal, _inImag, N, M);
 
-	//计算幅频
-	if (outAF)
-	{
-		for (i = 0; i < N; i++)
-			outAF[i] = sqrt(_inReal[i] * _inReal[i] + _inImag[i] * _inImag[i]) / (N / 2);
-	}
-	//计算相频
-	if (outPF)
-	{
-		for (i = 0; i < N; i++)
-			outPF[i] = atan2(_inImag[i], _inReal[i]);
-	}
+	//输出备份
+	if (outReal)
+		memcpy(outReal, _inReal, sizeof(_inReal));
+	if (outImag)
+		memcpy(outImag, _inImag, sizeof(_inImag));
 }
 
 //实数IFFT
-void IFFTR(float inReal[], float inImag[], float outAF[], float outPF[], unsigned int N)
+void IFFTR(
+    float inReal[], float inImag[],
+    float outReal[], float outImag[],
+    unsigned int N)
 {
 	int i, k;
 	int j, r, p, B;
@@ -379,16 +396,9 @@ void IFFTR(float inReal[], float inImag[], float outAF[], float outPF[], unsigne
 		}
 	}
 
-	//计算幅频
-	if (outAF)
-	{
-		for (i = 0; i < N; i++)
-			outAF[i] = sqrt(_inReal[i] * _inReal[i] + _inImag[i] * _inImag[i]) / (N / 2);
-	}
-	//计算相频
-	if (outPF)
-	{
-		for (i = 0; i < N; i++)
-			outPF[i] = atan2(_inImag[i], _inReal[i]);
-	}
+	//输出备份
+	if (outReal)
+		memcpy(outReal, _inReal, sizeof(_inReal));
+	if (outImag)
+		memcpy(outImag, _inImag, sizeof(_inImag));
 }
